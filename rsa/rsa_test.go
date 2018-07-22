@@ -2,13 +2,17 @@ package rsa
 
 import (
 	"bytes"
+	"fmt"
 	"math/big"
 	"testing"
 )
 
 func TestEncryptDecrypt(t *testing.T) {
-	key := GenerateKeyPair()
-
+	key, err := GenerateKeyPair()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	fmt.Println(key)
 	mBytes := []byte("Hi")
 	m := new(big.Int).SetBytes(mBytes)
 	c := Encrypt(m, key.PubK)
@@ -19,7 +23,10 @@ func TestEncryptDecrypt(t *testing.T) {
 	}
 }
 func TestBlindSignature(t *testing.T) {
-	key := GenerateKeyPair()
+	key, err := GenerateKeyPair()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
 
 	mBytes := []byte("Hi")
 	m := new(big.Int).SetBytes(mBytes)
@@ -39,8 +46,11 @@ func TestBlindSignature(t *testing.T) {
 	}
 }
 
-func TestHomomorphiMultiplication(t *testing.T) {
-	key := GenerateKeyPair()
+func TestHomomorphicMultiplication(t *testing.T) {
+	key, err := GenerateKeyPair()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
 
 	n1 := big.NewInt(int64(11))
 	n2 := big.NewInt(int64(15))

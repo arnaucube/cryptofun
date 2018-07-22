@@ -14,5 +14,10 @@ Crypto algorithms from scratch. Academic purposes only.
 - [x] Homomorphic Multiplication
 
 ## Paillier
+- [x] GenerateKeyPair
+- [x] Encrypt
+- [x] Decrypt
+- [x] Homomorphic Addition
+
 ## ECC
 ## Shamir Secret Sharing

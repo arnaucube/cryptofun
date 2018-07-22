@@ -2,17 +2,15 @@ package rsa
 
 import (
 	"bytes"
+	"crypto/rand"
 	"math/big"
-	"math/rand"
-	"time"
-
-	prime "../prime"
 )
 
 const (
-	MaxPrime = 2000
-	MinPrime = 500
+	bits = 512 // 2048
 )
+
+var bigOne = big.NewInt(int64(1))
 
 type PublicKey struct {
 	E *big.Int `json:"e"`
@@ -32,37 +30,42 @@ type Key struct {
 	PrivK PrivateKey
 }
 
-func GenerateKeyPair() (key Key) {
-	rand.Seed(time.Now().Unix())
-	p := prime.RandPrime(MinPrime, MaxPrime)
-	q := prime.RandPrime(MinPrime, MaxPrime)
+func GenerateKeyPair() (key Key, err error) {
+	p, err := rand.Prime(rand.Reader, bits/2)
+	if err != nil {
+		return key, err
+	}
+	q, err := rand.Prime(rand.Reader, bits/2)
+	if err != nil {
+		return key, err
+	}
 
-	n := p * q
-	phi := (p - 1) * (q - 1)
+	n := new(big.Int).Mul(p, q)
+	p_1 := new(big.Int).Sub(p, bigOne)
+	q_1 := new(big.Int).Sub(q, bigOne)
+	phi := new(big.Int).Mul(p_1, q_1)
 	e := 65537
 	var pubK PublicKey
 	pubK.E = big.NewInt(int64(e))
-	pubK.N = big.NewInt(int64(n))
+	pubK.N = n
 
-	d := new(big.Int).ModInverse(big.NewInt(int64(e)), big.NewInt(int64(phi)))
+	d := new(big.Int).ModInverse(big.NewInt(int64(e)), phi)
 
 	var privK PrivateKey
 	privK.D = d
-	privK.N = big.NewInt(int64(n))
+	privK.N = n
 
 	key.PubK = pubK
 	key.PrivK = privK
-	return key
+	return key, nil
 }
 
 func Encrypt(m *big.Int, pubK PublicKey) *big.Int {
-	Me := new(big.Int).Exp(m, pubK.E, nil)
-	c := new(big.Int).Mod(Me, pubK.N)
+	c := new(big.Int).Exp(m, pubK.E, pubK.N)
 	return c
 }
 func Decrypt(c *big.Int, privK PrivateKey) *big.Int {
-	Cd := new(big.Int).Exp(c, privK.D, nil)
-	m := new(big.Int).Mod(Cd, privK.N)
+	m := new(big.Int).Exp(c, privK.D, privK.N)
 	return m
 }
 

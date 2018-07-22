@@ -2,6 +2,11 @@ package prime
 
 import "math/rand"
 
+const (
+	MaxPrime = 2000
+	MinPrime = 500
+)
+
 func RandInt(min int, max int) int {
 	r := rand.Intn(max-min) + min
 	return r
