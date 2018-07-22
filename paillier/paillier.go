@@ -12,20 +12,25 @@ const (
 	bits = 16
 )
 
+// PublicKey stores the public key data
 type PublicKey struct {
 	N *big.Int `json:"n"`
 	G *big.Int `json:"g"`
 }
+
+// PrivateKey stores the private key data
 type PrivateKey struct {
 	Lambda *big.Int `json:"lambda"`
 	Mu     *big.Int `json:"mu"`
 }
 
+// Key stores the public and private key data
 type Key struct {
 	PubK  PublicKey
 	PrivK PrivateKey
 }
 
+// GenerateKeyPair generates a random private and public key
 func GenerateKeyPair() (key Key, err error) {
 	p, err := rand.Prime(rand.Reader, bits/2)
 	if err != nil {
@@ -44,7 +49,7 @@ func GenerateKeyPair() (key Key, err error) {
 	}
 
 	n := new(big.Int).Mul(p, q)
-	lambda := big.NewInt(int64(Lcm(float64(p.Int64())-1, float64(q.Int64())-1)))
+	lambda := big.NewInt(int64(lcm(float64(p.Int64())-1, float64(q.Int64())-1)))
 
 	//g generation
 	alpha := big.NewInt(int64(prime.RandInt(0, int(n.Int64()))))
@@ -64,7 +69,7 @@ func GenerateKeyPair() (key Key, err error) {
 	//mu generation
 	Glambda := new(big.Int).Exp(g, lambda, nil)
 	u := new(big.Int).Mod(Glambda, n2)
-	L := L(u, n)
+	L := l(u, n)
 	mu := new(big.Int).ModInverse(L, n)
 
 	key.PrivK.Lambda = lambda
@@ -73,17 +78,18 @@ func GenerateKeyPair() (key Key, err error) {
 	return key, nil
 }
 
-func Lcm(a, b float64) float64 {
+func lcm(a, b float64) float64 {
 	r := (a * b) / float64(prime.Gcd(int(a), int(b)))
 	return r
 
 }
-func L(u *big.Int, n *big.Int) *big.Int {
+func l(u *big.Int, n *big.Int) *big.Int {
 	u1 := new(big.Int).Sub(u, big.NewInt(1))
 	L := new(big.Int).Div(u1, n)
 	return L
 }
 
+// Encrypt encrypts a message m with given PublicKey
 func Encrypt(m *big.Int, pubK PublicKey) *big.Int {
 	gM := new(big.Int).Exp(pubK.G, m, nil)
 	r := big.NewInt(int64(prime.RandInt(0, int(pubK.N.Int64()))))
@@ -93,16 +99,19 @@ func Encrypt(m *big.Int, pubK PublicKey) *big.Int {
 	c := new(big.Int).Mod(gMrN, n2)
 	return c
 }
+
+// Decrypt deencrypts a ciphertext c with given PublicKey and PrivateKey
 func Decrypt(c *big.Int, pubK PublicKey, privK PrivateKey) *big.Int {
 	cLambda := new(big.Int).Exp(c, privK.Lambda, nil)
 	n2 := new(big.Int).Mul(pubK.N, pubK.N)
 	u := new(big.Int).Mod(cLambda, n2)
-	L := L(u, pubK.N)
+	L := l(u, pubK.N)
 	LMu := new(big.Int).Mul(L, privK.Mu)
 	m := new(big.Int).Mod(LMu, pubK.N)
 	return m
 }
 
+// HomomorphicAddition calculates the addition of tow encrypted values given a PublicKey
 func HomomorphicAddition(c1 *big.Int, c2 *big.Int, pubK PublicKey) *big.Int {
 	c1c2 := new(big.Int).Mul(c1, c2)
 	n2 := new(big.Int).Mul(pubK.N, pubK.N)

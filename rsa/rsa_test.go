@@ -2,7 +2,6 @@ package rsa
 
 import (
 	"bytes"
-	"fmt"
 	"math/big"
 	"testing"
 )
@@ -12,7 +11,6 @@ func TestEncryptDecrypt(t *testing.T) {
 	if err != nil {
 		t.Errorf(err.Error())
 	}
-	fmt.Println(key)
 	mBytes := []byte("Hi")
 	m := new(big.Int).SetBytes(mBytes)
 	c := Encrypt(m, key.PubK)

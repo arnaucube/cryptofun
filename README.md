@@ -4,6 +4,7 @@ Crypto algorithms from scratch. Academic purposes only.
 
 
 ## RSA
+https://en.wikipedia.org/wiki/RSA_(cryptosystem)#
 - [x] GenerateKeyPair
 - [x] Encrypt
 - [x] Decrypt
@@ -14,10 +15,15 @@ Crypto algorithms from scratch. Academic purposes only.
 - [x] Homomorphic Multiplication
 
 ## Paillier
+https://en.wikipedia.org/wiki/Paillier_cryptosystem
 - [x] GenerateKeyPair
 - [x] Encrypt
 - [x] Decrypt
 - [x] Homomorphic Addition
 
-## ECC
 ## Shamir Secret Sharing
+https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing
+- [x] create secret sharing from NumOfSecretsNeed, NumOfShares, RandPointP, SecretToShare
+- [x] Lagrange Interpolation to restore the secret from the shares
+
+## ECC

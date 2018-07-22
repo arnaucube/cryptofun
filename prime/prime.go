@@ -3,21 +3,26 @@ package prime
 import "math/rand"
 
 const (
+	// MaxPrime is to get a prime value below this number
 	MaxPrime = 2000
+	// MinPrime is to get a prime value above this number
 	MinPrime = 500
 )
 
+// RandInt returns a random integer between two values
 func RandInt(min int, max int) int {
 	r := rand.Intn(max-min) + min
 	return r
 }
+
+// RandPrime returns a random prime number between two values
 func RandPrime(min int, max int) int {
 	primes := SieveOfEratosthenes(max)
 	randN := rand.Intn(len(primes)-0) + 0
 	return primes[randN]
 }
 
-// return list of primes less than N
+// SieveOfEratosthenes returns a list of primes less than N
 func SieveOfEratosthenes(N int) (primes []int) {
 	b := make([]bool, N)
 	for i := 2; i < N; i++ {
@@ -32,6 +37,7 @@ func SieveOfEratosthenes(N int) (primes []int) {
 	return
 }
 
+// Gcd returns the greatest common divisor
 func Gcd(a, b int) int {
 	var bgcd func(a, b, res int) int
 	bgcd = func(a, b, res int) int {
