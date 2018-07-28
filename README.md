@@ -37,6 +37,13 @@ https://en.wikipedia.org/wiki/Elliptic-curve_cryptography
 - [x] Add two points on the elliptic curve
 - [x] Multiply a point n times on the elliptic curve
 
+## ECC ElGamal
+https://en.wikipedia.org/wiki/ElGamal_encryption
+- [x] ECC ElGamal key generation
+- [x] ECC ElGamal Encrypton
+- [x] ECC ElGamal Decryption
+
+---
 
 To run all tests:
 ```

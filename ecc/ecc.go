@@ -6,6 +6,7 @@ import (
 	"math/big"
 )
 
+// EC is the data structure for the elliptic curve parameters
 type EC struct {
 	A *big.Int
 	B *big.Int
@@ -40,14 +41,29 @@ func (ec *EC) At(x *big.Int) (Point, Point, error) {
 	return Point{x, y}, Point{x, new(big.Int).Sub(ec.Q, y)}, nil
 }
 
-// TODO add valid checker point function
+// TODO add valid checker point function Valid()
 
+// Neg returns the inverse of the P point on the elliptic curve
 func (ec *EC) Neg(p Point) Point {
 	// TODO get error when point not found on the ec
 	return Point{p.X, new(big.Int).Sub(ec.Q, p.Y)}
 }
 
-// Add adds two points p1 and p2 and gets q
+// Order returns smallest n where nG = O (point at zero)
+func (ec *EC) Order(g Point) (int, error) {
+	for i := 1; i < int(ec.Q.Int64())+1; i++ {
+		mPoint, err := ec.Mul(g, i)
+		if err != nil {
+			return i, err
+		}
+		if mPoint.Equal(zeroPoint) {
+			return i, nil
+		}
+	}
+	return -1, errors.New("invalid order")
+}
+
+// Add adds two points p1 and p2 and gets q, returns the negate of q
 func (ec *EC) Add(p1, p2 Point) (Point, error) {
 	if p1.Equal(zeroPoint) {
 		return p2, nil
@@ -69,7 +85,7 @@ func (ec *EC) Add(p1, p2 Point) (Point, error) {
 		numerator = new(big.Int).Add(x23, ec.A)
 		// 2 * y
 		denominator = new(big.Int).Mul(big.NewInt(int64(2)), p1.Y)
-		// (3 * x^2 + a) / (2 * y) mod ec.Q
+		// s = (3 * x^2 + a) / (2 * y) mod ec.Q
 		denInv := new(big.Int).ModInverse(denominator, ec.Q)
 		sRaw = new(big.Int).Mul(numerator, denInv)
 		s = new(big.Int).Mod(sRaw, ec.Q)
@@ -79,7 +95,7 @@ func (ec *EC) Add(p1, p2 Point) (Point, error) {
 		numerator = new(big.Int).Sub(p1.Y, p2.Y)
 		// x0-x1
 		denominator = new(big.Int).Sub(p1.X, p2.X)
-		// (y0-y1) / (x0-x1) mod ec.Q
+		// s = (y0-y1) / (x0-x1) mod ec.Q
 		denInv := new(big.Int).ModInverse(denominator, ec.Q)
 		sRaw = new(big.Int).Mul(numerator, denInv)
 		s = new(big.Int).Mod(sRaw, ec.Q)
@@ -104,17 +120,29 @@ func (ec *EC) Add(p1, p2 Point) (Point, error) {
 	// q.Y = (s(p1.X - q.X) - p1.Y) mod ec.Q
 	q.Y = new(big.Int).Mod(sXoX2Y, ec.Q)
 
+	// negate q
+	// q = ec.Neg(q)
 	return q, nil
 }
 
 // Mul multiplies a point n times on the elliptic curve
 func (ec *EC) Mul(p Point, n int) (Point, error) {
 	var err error
-	for i := 0; i < n; i++ {
-		p, err = ec.Add(p, p)
-		if err != nil {
-			return zeroPoint, err
+	p2 := p
+	r := zeroPoint
+	for 0 < n {
+		if n&1 == 1 {
+			r, err = ec.Add(r, p2)
+			if err != nil {
+				return p, err
+			}
 		}
+		n = n >> 1
+		p2, err = ec.Add(p2, p2)
+		if err != nil {
+			return p, err
+		}
+
 	}
-	return p, nil
+	return r, nil
 }
