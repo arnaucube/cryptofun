@@ -1,4 +1,4 @@
-# cryptofun
+# cryptofun [![Go Report Card](https://goreportcard.com/badge/github.com/arnaucode/cryptofun)](https://goreportcard.com/report/github.com/arnaucode/cryptofun)
 
 Crypto algorithms from scratch. Academic purposes only.
 
@@ -23,7 +23,15 @@ https://en.wikipedia.org/wiki/Paillier_cryptosystem
 
 ## Shamir Secret Sharing
 https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing
-- [x] create secret sharing from NumOfSecretsNeed, NumOfShares, RandPointP, SecretToShare
+- [x] create secret sharing from number of secrets needed, number of shares, random point p, secret to share
 - [x] Lagrange Interpolation to restore the secret from the shares
 
+## Diffie-Hellman
+https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange
+- [x] key exchange
+
 ## ECC
+https://en.wikipedia.org/wiki/Elliptic-curve_cryptography
+- [x] define elliptic curve
+- [x] get point at X
+- [x] Add two points on the elliptic curve
