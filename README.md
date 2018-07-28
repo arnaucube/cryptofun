@@ -35,3 +35,10 @@ https://en.wikipedia.org/wiki/Elliptic-curve_cryptography
 - [x] define elliptic curve
 - [x] get point at X
 - [x] Add two points on the elliptic curve
+- [x] Multiply a point n times on the elliptic curve
+
+
+To run all tests:
+```
+go test ./... -v
+```

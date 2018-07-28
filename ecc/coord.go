@@ -1,6 +1,9 @@
 package ecc
 
-import "math/big"
+import (
+	"bytes"
+	"math/big"
+)
 
 var (
 	bigZero   = big.NewInt(int64(0))
@@ -13,10 +16,10 @@ type Point struct {
 }
 
 func (c1 *Point) Equal(c2 Point) bool {
-	if c1.X.Int64() != c2.X.Int64() {
+	if !bytes.Equal(c1.X.Bytes(), c2.X.Bytes()) {
 		return false
 	}
-	if c1.Y.Int64() != c2.Y.Int64() {
+	if !bytes.Equal(c1.Y.Bytes(), c2.Y.Bytes()) {
 		return false
 	}
 	return true
