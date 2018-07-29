@@ -34,6 +34,7 @@ https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange
 https://en.wikipedia.org/wiki/Elliptic-curve_cryptography
 - [x] define elliptic curve
 - [x] get point at X
+- [x] get order of a Point on the elliptic curve
 - [x] Add two points on the elliptic curve
 - [x] Multiply a point n times on the elliptic curve
 
@@ -42,6 +43,14 @@ https://en.wikipedia.org/wiki/ElGamal_encryption
 - [x] ECC ElGamal key generation
 - [x] ECC ElGamal Encrypton
 - [x] ECC ElGamal Decryption
+
+## ECC ECDSA
+https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm
+- [x] define ECDSA data structure
+- [x] ECDSA Sign
+- [x] ECDSA Verify signature
+
+
 
 ---
 

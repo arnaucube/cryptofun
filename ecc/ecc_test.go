@@ -44,11 +44,11 @@ func TestAdd(t *testing.T) {
 	}
 
 	// check that q exists on the elliptic curve
-	pt, pt_, err := ec.At(q.X)
+	pt, pti, err := ec.At(q.X)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
-	if !q.Equal(pt) && !q.Equal(pt_) {
+	if !q.Equal(pt) && !q.Equal(pti) {
 		t.Errorf("q not exist on the elliptic curve")
 	}
 
