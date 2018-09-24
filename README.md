@@ -1,4 +1,4 @@
-# cryptofun [![Go Report Card](https://goreportcard.com/badge/github.com/arnaucode/cryptofun)](https://goreportcard.com/report/github.com/arnaucode/cryptofun)
+# cryptofun [![Go Report Card](https://goreportcard.com/badge/github.com/arnaucube/cryptofun)](https://goreportcard.com/report/github.com/arnaucube/cryptofun)
 
 Crypto algorithms from scratch. Academic purposes only.
 
@@ -51,6 +51,12 @@ https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm
 - [x] ECDSA Verify signature
 
 
+## Schnorr signature
+https://en.wikipedia.org/wiki/Schnorr_signature
+- [x] Hash[M || R] (where M is the msg bytes and R is a Point on the ECC, using sha256 hash function)
+- [x] Generate Schnorr scheme
+- [x] Sign
+- [x] Verify signature
 
 ---
 

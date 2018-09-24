@@ -5,7 +5,8 @@ import (
 	"errors"
 	"math/big"
 
-	prime "../prime"
+	// prime "../prime"
+	"github.com/arnaucube/cryptofun/prime"
 )
 
 const (

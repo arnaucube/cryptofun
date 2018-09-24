@@ -1,14 +1,16 @@
 package elgamal
 
 import (
-	ecc "../ecc"
+	"math/big"
+
+	"github.com/arnaucube/cryptofun/ecc"
 )
 
 // EG is the ElGamal data structure
 type EG struct {
 	EC ecc.EC
 	G  ecc.Point
-	N  int
+	N  *big.Int
 }
 
 // NewEG defines a new EG data structure
@@ -22,19 +24,22 @@ func NewEG(ec ecc.EC, g ecc.Point) (EG, error) {
 }
 
 // PubK returns the public key Point calculated from the private key over the elliptic curve
-func (eg EG) PubK(privK int) (ecc.Point, error) {
+func (eg EG) PubK(privK *big.Int) (ecc.Point, error) {
 	// privK: rand < ec.Q
-	pubK, err := eg.EC.Mul(eg.G, privK)
+	privKCopy := new(big.Int).SetBytes(privK.Bytes())
+	pubK, err := eg.EC.Mul(eg.G, privKCopy)
 	return pubK, err
 }
 
 // Encrypt encrypts a point m with the public key point, returns two points
-func (eg EG) Encrypt(m ecc.Point, pubK ecc.Point, r int) ([2]ecc.Point, error) {
-	p1, err := eg.EC.Mul(eg.G, r)
+func (eg EG) Encrypt(m ecc.Point, pubK ecc.Point, r *big.Int) ([2]ecc.Point, error) {
+	rCopy := new(big.Int).SetBytes(r.Bytes())
+	p1, err := eg.EC.Mul(eg.G, rCopy)
 	if err != nil {
 		return [2]ecc.Point{}, err
 	}
-	p2, err := eg.EC.Mul(pubK, r)
+	rCopy = new(big.Int).SetBytes(r.Bytes())
+	p2, err := eg.EC.Mul(pubK, rCopy)
 	if err != nil {
 		return [2]ecc.Point{}, err
 	}
@@ -47,10 +52,11 @@ func (eg EG) Encrypt(m ecc.Point, pubK ecc.Point, r int) ([2]ecc.Point, error) {
 }
 
 // Decrypt decrypts c (two points) with the private key, returns the point decrypted
-func (eg EG) Decrypt(c [2]ecc.Point, privK int) (ecc.Point, error) {
+func (eg EG) Decrypt(c [2]ecc.Point, privK *big.Int) (ecc.Point, error) {
 	c1 := c[0]
 	c2 := c[1]
-	c1PrivK, err := eg.EC.Mul(c1, privK)
+	privKCopy := new(big.Int).SetBytes(privK.Bytes())
+	c1PrivK, err := eg.EC.Mul(c1, privKCopy)
 	if err != nil {
 		return ecc.Point{}, err
 	}

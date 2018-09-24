@@ -1,17 +1,17 @@
-package secrets
+package shamirsecretsharing
 
 import (
 	"crypto/rand"
 	"math/big"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCreate(t *testing.T) {
 	k := 123456789
 	p, err := rand.Prime(rand.Reader, bits/2)
-	if err != nil {
-		t.Errorf(err.Error())
-	}
+	assert.Nil(t, err)
 
 	nNeededSecrets := big.NewInt(int64(3))
 	nShares := big.NewInt(int64(6))
@@ -20,9 +20,7 @@ func TestCreate(t *testing.T) {
 		nShares,
 		p,
 		big.NewInt(int64(k)))
-	if err != nil {
-		t.Errorf(err.Error())
-	}
+	assert.Nil(t, err)
 
 	//generate sharesToUse
 	var sharesToUse [][]*big.Int

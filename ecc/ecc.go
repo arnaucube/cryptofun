@@ -49,20 +49,6 @@ func (ec *EC) Neg(p Point) Point {
 	return Point{p.X, new(big.Int).Sub(ec.Q, p.Y)}
 }
 
-// Order returns smallest n where nG = O (point at zero)
-func (ec *EC) Order(g Point) (int, error) {
-	for i := 1; i < int(ec.Q.Int64())+1; i++ {
-		mPoint, err := ec.Mul(g, i)
-		if err != nil {
-			return i, err
-		}
-		if mPoint.Equal(zeroPoint) {
-			return i, nil
-		}
-	}
-	return -1, errors.New("invalid order")
-}
-
 // Add adds two points p1 and p2 and gets q, returns the negate of q
 func (ec *EC) Add(p1, p2 Point) (Point, error) {
 	if p1.Equal(zeroPoint) {
@@ -126,23 +112,41 @@ func (ec *EC) Add(p1, p2 Point) (Point, error) {
 }
 
 // Mul multiplies a point n times on the elliptic curve
-func (ec *EC) Mul(p Point, n int) (Point, error) {
+func (ec *EC) Mul(p Point, n *big.Int) (Point, error) {
 	var err error
 	p2 := p
 	r := zeroPoint
-	for 0 < n {
-		if n&1 == 1 {
+	for bigZero.Cmp(n) == -1 { // 0<n
+		z := new(big.Int).And(n, bigOne)            // n&1
+		if bytes.Equal(z.Bytes(), bigOne.Bytes()) { // n&1==1
 			r, err = ec.Add(r, p2)
 			if err != nil {
 				return p, err
 			}
 		}
-		n = n >> 1
+		n = n.Rsh(n, 1) // n = n>>1
 		p2, err = ec.Add(p2, p2)
 		if err != nil {
 			return p, err
 		}
-
 	}
 	return r, nil
+}
+
+// Order returns smallest n where nG = O (point at zero)
+func (ec *EC) Order(g Point) (*big.Int, error) {
+	// loop from i:=1 to i<ec.Q+1
+	start := big.NewInt(1)
+	end := new(big.Int).Add(ec.Q, bigOne)
+	for i := new(big.Int).Set(start); i.Cmp(end) <= 0; i.Add(i, bigOne) {
+		iCopy := new(big.Int).SetBytes(i.Bytes())
+		mPoint, err := ec.Mul(g, iCopy)
+		if err != nil {
+			return i, err
+		}
+		if mPoint.Equal(zeroPoint) {
+			return i, nil
+		}
+	}
+	return bigZero, errors.New("invalid order")
 }

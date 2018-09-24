@@ -4,21 +4,20 @@ import (
 	"math/big"
 	"testing"
 
-	ecc "../ecc"
+	"github.com/arnaucube/cryptofun/ecc"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewECDSA(t *testing.T) {
 	ec := ecc.NewEC(1, 18, 19)
 	g := ecc.Point{big.NewInt(int64(7)), big.NewInt(int64(11))}
 	dsa, err := NewDSA(ec, g)
-	if err != nil {
-		t.Errorf(err.Error())
-	}
-	privK := 5
+	assert.Nil(t, err)
+
+	privK := big.NewInt(int64(5))
 	pubK, err := dsa.PubK(privK)
-	if err != nil {
-		t.Errorf(err.Error())
-	}
+	assert.Nil(t, err)
+
 	if !pubK.Equal(ecc.Point{big.NewInt(int64(13)), big.NewInt(int64(9))}) {
 		t.Errorf("pubK!=(13, 9)")
 	}
@@ -28,24 +27,18 @@ func TestECDSASignAndVerify(t *testing.T) {
 	ec := ecc.NewEC(1, 18, 19)
 	g := ecc.Point{big.NewInt(int64(7)), big.NewInt(int64(11))}
 	dsa, err := NewDSA(ec, g)
-	if err != nil {
-		t.Errorf(err.Error())
-	}
-	privK := 5
+	assert.Nil(t, err)
+
+	privK := big.NewInt(int64(5))
 	pubK, err := dsa.PubK(privK)
-	if err != nil {
-		t.Errorf(err.Error())
-	}
+	assert.Nil(t, err)
+
 	hashval := big.NewInt(int64(40))
 	r := big.NewInt(int64(11))
 
 	sig, err := dsa.Sign(hashval, privK, r)
-	if err != nil {
-		t.Errorf(err.Error())
-	}
+	assert.Nil(t, err)
 
 	verified, err := dsa.Verify(hashval, sig, pubK)
-	if !verified {
-		t.Errorf("verified == false")
-	}
+	assert.True(t, verified)
 }

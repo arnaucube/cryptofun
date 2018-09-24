@@ -4,6 +4,8 @@ import (
 	"crypto/rand"
 	"math/big"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 const (
@@ -12,26 +14,19 @@ const (
 
 func TestDiffieHellman(t *testing.T) {
 	p, err := rand.Prime(rand.Reader, bits/2)
-	if err != nil {
-		t.Errorf(err.Error())
-	}
+	assert.Nil(t, err)
+
 	g, err := rand.Prime(rand.Reader, bits/2)
-	if err != nil {
-		t.Errorf(err.Error())
-	}
+	assert.Nil(t, err)
 
 	max, err := rand.Prime(rand.Reader, bits/2)
-	if err != nil {
-		t.Errorf(err.Error())
-	}
+	assert.Nil(t, err)
+
 	a, err := rand.Int(rand.Reader, max)
-	if err != nil {
-		t.Errorf(err.Error())
-	}
+	assert.Nil(t, err)
+
 	b, err := rand.Int(rand.Reader, max)
-	if err != nil {
-		t.Errorf(err.Error())
-	}
+	assert.Nil(t, err)
 
 	A := new(big.Int).Exp(g, a, p)
 	B := new(big.Int).Exp(g, b, p)

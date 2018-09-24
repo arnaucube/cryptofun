@@ -7,6 +7,7 @@ import (
 
 var (
 	bigZero   = big.NewInt(int64(0))
+	bigOne    = big.NewInt(int64(1))
 	zeroPoint = Point{bigZero, bigZero}
 )
 
@@ -25,4 +26,9 @@ func (c1 *Point) Equal(c2 Point) bool {
 		return false
 	}
 	return true
+}
+
+// String returns the components of the point in a string
+func (p *Point) String() string {
+	return "(" + p.X.String() + ", " + p.Y.String() + ")"
 }

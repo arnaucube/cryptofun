@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"math/big"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestEncryptDecrypt(t *testing.T) {
 	key, err := GenerateKeyPair()
-	if err != nil {
-		t.Errorf(err.Error())
-	}
+	assert.Nil(t, err)
+
 	mBytes := []byte("Hi")
 	m := new(big.Int).SetBytes(mBytes)
 	c := Encrypt(m, key.PubK)
@@ -24,9 +25,8 @@ func TestEncryptDecrypt(t *testing.T) {
 
 func TestHomomorphicAddition(t *testing.T) {
 	key, err := GenerateKeyPair()
-	if err != nil {
-		t.Errorf(err.Error())
-	}
+	assert.Nil(t, err)
+
 	n1 := big.NewInt(int64(110))
 	n2 := big.NewInt(int64(150))
 	c1 := Encrypt(n1, key.PubK)
