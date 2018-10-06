@@ -58,6 +58,19 @@ https://en.wikipedia.org/wiki/Schnorr_signature
 - [x] Sign
 - [x] Verify signature
 
+
+## Bn128
+**[not finished]**
+
+This is implemented followng the implementations and info from:
+- https://github.com/iden3/zksnark
+- https://github.com/zcash/zcash/tree/master/src/snark
+- `Multiplication and Squaring on Pairing-Friendly
+Fields`, Augusto Jun Devegili, Colm Ó hÉigeartaigh, Michael Scott, and Ricardo Dahab https://pdfs.semanticscholar.org/3e01/de88d7428076b2547b60072088507d881bf1.pdf
+- `Optimal Pairings`, Frederik Vercauteren https://www.cosic.esat.kuleuven.be/bcrypt/optimal.pdf
+
+- [x] Fq, Fq2, Fq6, Fq12 operations
+
 ---
 
 To run all tests:

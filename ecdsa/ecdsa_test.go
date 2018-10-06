@@ -9,7 +9,7 @@ import (
 )
 
 func TestNewECDSA(t *testing.T) {
-	ec := ecc.NewEC(1, 18, 19)
+	ec := ecc.NewEC(big.NewInt(int64(1)), big.NewInt(int64(18)), big.NewInt(int64(19)))
 	g := ecc.Point{big.NewInt(int64(7)), big.NewInt(int64(11))}
 	dsa, err := NewDSA(ec, g)
 	assert.Nil(t, err)
@@ -24,7 +24,7 @@ func TestNewECDSA(t *testing.T) {
 }
 
 func TestECDSASignAndVerify(t *testing.T) {
-	ec := ecc.NewEC(1, 18, 19)
+	ec := ecc.NewEC(big.NewInt(int64(1)), big.NewInt(int64(18)), big.NewInt(int64(19)))
 	g := ecc.Point{big.NewInt(int64(7)), big.NewInt(int64(11))}
 	dsa, err := NewDSA(ec, g)
 	assert.Nil(t, err)

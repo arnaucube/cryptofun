@@ -9,7 +9,7 @@ import (
 )
 
 func TestNewEG(t *testing.T) {
-	ec := ecc.NewEC(1, 18, 19)
+	ec := ecc.NewEC(big.NewInt(int64(1)), big.NewInt(int64(18)), big.NewInt(int64(19)))
 	g := ecc.Point{big.NewInt(int64(7)), big.NewInt(int64(11))}
 	eg, err := NewEG(ec, g)
 	assert.Nil(t, err)
@@ -23,7 +23,7 @@ func TestNewEG(t *testing.T) {
 	}
 }
 func TestEGEncrypt(t *testing.T) {
-	ec := ecc.NewEC(1, 18, 19)
+	ec := ecc.NewEC(big.NewInt(int64(1)), big.NewInt(int64(18)), big.NewInt(int64(19)))
 	g := ecc.Point{big.NewInt(int64(7)), big.NewInt(int64(11))}
 	eg, err := NewEG(ec, g)
 	assert.Nil(t, err)
@@ -46,7 +46,7 @@ func TestEGEncrypt(t *testing.T) {
 }
 
 func TestEGDecrypt(t *testing.T) {
-	ec := ecc.NewEC(1, 18, 19)
+	ec := ecc.NewEC(big.NewInt(int64(1)), big.NewInt(int64(18)), big.NewInt(int64(19)))
 	g := ecc.Point{big.NewInt(int64(7)), big.NewInt(int64(11))}
 	eg, err := NewEG(ec, g)
 	assert.Nil(t, err)

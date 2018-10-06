@@ -14,10 +14,10 @@ type EC struct {
 }
 
 // NewEC (y^2 = x^3 + ax + b) mod q, where q is a prime number
-func NewEC(a, b, q int) (ec EC) {
-	ec.A = big.NewInt(int64(a))
-	ec.B = big.NewInt(int64(b))
-	ec.Q = big.NewInt(int64(q))
+func NewEC(a, b, q *big.Int) (ec EC) {
+	ec.A = a
+	ec.B = b
+	ec.Q = q
 	return ec
 }
 
@@ -51,16 +51,16 @@ func (ec *EC) Neg(p Point) Point {
 
 // Add adds two points p1 and p2 and gets q, returns the negate of q
 func (ec *EC) Add(p1, p2 Point) (Point, error) {
-	if p1.Equal(zeroPoint) {
+	if p1.Equal(ZeroPoint) {
 		return p2, nil
 	}
-	if p2.Equal(zeroPoint) {
+	if p2.Equal(ZeroPoint) {
 		return p1, nil
 	}
 
 	var numerator, denominator, sRaw, s *big.Int
-	if bytes.Equal(p1.X.Bytes(), p2.X.Bytes()) && (!bytes.Equal(p1.Y.Bytes(), p2.Y.Bytes()) || bytes.Equal(p1.Y.Bytes(), bigZero.Bytes())) {
-		return zeroPoint, nil
+	if bytes.Equal(p1.X.Bytes(), p2.X.Bytes()) && (!bytes.Equal(p1.Y.Bytes(), p2.Y.Bytes()) || bytes.Equal(p1.Y.Bytes(), BigZero.Bytes())) {
+		return ZeroPoint, nil
 	} else if bytes.Equal(p1.X.Bytes(), p2.X.Bytes()) {
 		// use tangent as slope
 		// x^2
@@ -115,10 +115,10 @@ func (ec *EC) Add(p1, p2 Point) (Point, error) {
 func (ec *EC) Mul(p Point, n *big.Int) (Point, error) {
 	var err error
 	p2 := p
-	r := zeroPoint
-	for bigZero.Cmp(n) == -1 { // 0<n
-		z := new(big.Int).And(n, bigOne)            // n&1
-		if bytes.Equal(z.Bytes(), bigOne.Bytes()) { // n&1==1
+	r := ZeroPoint
+	for BigZero.Cmp(n) == -1 { // 0<n
+		z := new(big.Int).And(n, BigOne)            // n&1
+		if bytes.Equal(z.Bytes(), BigOne.Bytes()) { // n&1==1
 			r, err = ec.Add(r, p2)
 			if err != nil {
 				return p, err
@@ -137,16 +137,16 @@ func (ec *EC) Mul(p Point, n *big.Int) (Point, error) {
 func (ec *EC) Order(g Point) (*big.Int, error) {
 	// loop from i:=1 to i<ec.Q+1
 	start := big.NewInt(1)
-	end := new(big.Int).Add(ec.Q, bigOne)
-	for i := new(big.Int).Set(start); i.Cmp(end) <= 0; i.Add(i, bigOne) {
+	end := new(big.Int).Add(ec.Q, BigOne)
+	for i := new(big.Int).Set(start); i.Cmp(end) <= 0; i.Add(i, BigOne) {
 		iCopy := new(big.Int).SetBytes(i.Bytes())
 		mPoint, err := ec.Mul(g, iCopy)
 		if err != nil {
 			return i, err
 		}
-		if mPoint.Equal(zeroPoint) {
+		if mPoint.Equal(ZeroPoint) {
 			return i, nil
 		}
 	}
-	return bigZero, errors.New("invalid order")
+	return BigZero, errors.New("invalid order")
 }

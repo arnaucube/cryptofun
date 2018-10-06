@@ -6,9 +6,9 @@ import (
 )
 
 var (
-	bigZero   = big.NewInt(int64(0))
-	bigOne    = big.NewInt(int64(1))
-	zeroPoint = Point{bigZero, bigZero}
+	BigZero   = big.NewInt(int64(0))
+	BigOne    = big.NewInt(int64(1))
+	ZeroPoint = Point{BigZero, BigZero}
 )
 
 // Point is the data structure for a point, containing the X and Y coordinates
@@ -18,11 +18,11 @@ type Point struct {
 }
 
 // Equal compares the X and Y coord of a Point and returns true if are the same
-func (c1 *Point) Equal(c2 Point) bool {
-	if !bytes.Equal(c1.X.Bytes(), c2.X.Bytes()) {
+func (p1 *Point) Equal(p2 Point) bool {
+	if !bytes.Equal(p1.X.Bytes(), p2.X.Bytes()) {
 		return false
 	}
-	if !bytes.Equal(c1.Y.Bytes(), c2.Y.Bytes()) {
+	if !bytes.Equal(p1.Y.Bytes(), p2.Y.Bytes()) {
 		return false
 	}
 	return true

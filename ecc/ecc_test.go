@@ -8,7 +8,7 @@ import (
 )
 
 func TestECC(t *testing.T) {
-	ec := NewEC(0, 7, 11)
+	ec := NewEC(big.NewInt(int64(0)), big.NewInt(int64(7)), big.NewInt(int64(11)))
 	p1, p1i, err := ec.At(big.NewInt(int64(7)))
 	assert.Nil(t, err)
 
@@ -20,7 +20,7 @@ func TestECC(t *testing.T) {
 	}
 }
 func TestNeg(t *testing.T) {
-	ec := NewEC(0, 7, 11)
+	ec := NewEC(big.NewInt(int64(0)), big.NewInt(int64(7)), big.NewInt(int64(11)))
 	p1, p1i, err := ec.At(big.NewInt(int64(7)))
 	assert.Nil(t, err)
 
@@ -32,7 +32,7 @@ func TestNeg(t *testing.T) {
 }
 
 func TestAdd(t *testing.T) {
-	ec := NewEC(0, 7, 11)
+	ec := NewEC(big.NewInt(int64(0)), big.NewInt(int64(7)), big.NewInt(int64(11)))
 	p1 := Point{big.NewInt(int64(4)), big.NewInt(int64(7))}
 	p2 := Point{big.NewInt(int64(2)), big.NewInt(int64(2))}
 	q, err := ec.Add(p1, p2)
@@ -53,7 +53,7 @@ func TestAdd(t *testing.T) {
 }
 
 func TestAddSamePoint(t *testing.T) {
-	ec := NewEC(0, 7, 11)
+	ec := NewEC(big.NewInt(int64(0)), big.NewInt(int64(7)), big.NewInt(int64(11)))
 	p1 := Point{big.NewInt(int64(4)), big.NewInt(int64(7))}
 	p1i := Point{big.NewInt(int64(4)), big.NewInt(int64(4))}
 
@@ -74,7 +74,7 @@ func TestAddSamePoint(t *testing.T) {
 }
 
 func TestMulPoint1(t *testing.T) {
-	ec := NewEC(0, 7, 29)
+	ec := NewEC(big.NewInt(int64(0)), big.NewInt(int64(7)), big.NewInt(int64(29)))
 	p := Point{big.NewInt(int64(11)), big.NewInt(int64(27))}
 
 	q, err := ec.Mul(p, big.NewInt(int64(1)))
@@ -107,7 +107,7 @@ func TestMulPoint1(t *testing.T) {
 }
 
 func TestMulPoint2(t *testing.T) {
-	ec := NewEC(0, 7, 29)
+	ec := NewEC(big.NewInt(int64(0)), big.NewInt(int64(7)), big.NewInt(int64(29)))
 	p1 := Point{big.NewInt(int64(4)), big.NewInt(int64(19))}
 	q3, err := ec.Mul(p1, big.NewInt(int64(3)))
 	assert.Nil(t, err)
@@ -132,7 +132,7 @@ func TestMulPoint2(t *testing.T) {
 
 func TestMulPoint3(t *testing.T) {
 	// in this test we will multiply by a high number
-	ec := NewEC(0, 7, 11)
+	ec := NewEC(big.NewInt(int64(0)), big.NewInt(int64(7)), big.NewInt(int64(11)))
 	p := Point{big.NewInt(int64(7)), big.NewInt(int64(3))}
 
 	q, err := ec.Mul(p, big.NewInt(int64(100)))
@@ -149,7 +149,7 @@ func TestMulPoint3(t *testing.T) {
 }
 
 func TestMulEqualSelfAdd(t *testing.T) {
-	ec := NewEC(0, 7, 29)
+	ec := NewEC(big.NewInt(int64(0)), big.NewInt(int64(7)), big.NewInt(int64(29)))
 	p1 := Point{big.NewInt(int64(11)), big.NewInt(int64(27))}
 
 	p1_2, err := ec.Add(p1, p1)
@@ -185,7 +185,7 @@ func TestMulEqualSelfAdd(t *testing.T) {
 }
 
 func TestOrder(t *testing.T) {
-	ec := NewEC(0, 7, 11)
+	ec := NewEC(big.NewInt(int64(0)), big.NewInt(int64(7)), big.NewInt(int64(11)))
 	g := Point{big.NewInt(int64(7)), big.NewInt(int64(8))}
 	order, err := ec.Order(g)
 	assert.Nil(t, err)
@@ -198,7 +198,7 @@ func TestOrder(t *testing.T) {
 	assert.Equal(t, order.Int64(), int64(4))
 
 	// another test with another curve
-	ec = NewEC(0, 7, 29)
+	ec = NewEC(big.NewInt(int64(0)), big.NewInt(int64(7)), big.NewInt(int64(29)))
 	g = Point{big.NewInt(int64(6)), big.NewInt(int64(22))}
 	order, err = ec.Order(g)
 	assert.Nil(t, err)

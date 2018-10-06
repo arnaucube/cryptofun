@@ -10,11 +10,11 @@ const (
 	bits = 1024
 )
 
+// Create calculates the secrets to share from given parameters
 // t: number of secrets needed
 // n: number of shares
 // p: random point
 // k: secret to share
-// Create calculates the secrets to share from given parameters
 func Create(t, n, p, k *big.Int) (result [][]*big.Int, err error) {
 	if k.Cmp(p) > 0 {
 		return nil, errors.New("Error: need k<p. k: " + k.String() + ", p: " + p.String())

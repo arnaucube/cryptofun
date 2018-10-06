@@ -8,20 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// func TestNewSystem(t *testing.T) {
-//
-// 	ec := ecc.NewEC(0, 7, 11)
-// 	g := ecc.Point{big.NewInt(int64(7)), big.NewInt(int64(8))} // Generator
-// 	r := big.NewInt(int64(7))                                  // random r
-// 	schnorr, sk, err := Gen(ec, g, r)
-// 	assert.Nil(t, err)
-//
-// 	fmt.Print("schnorr")
-// 	fmt.Println(schnorr)
-// 	fmt.Print("sk")
-// 	fmt.Println(sk)
-// }
-
 func TestHash(t *testing.T) {
 	c := ecc.Point{big.NewInt(int64(7)), big.NewInt(int64(8))} // Generator
 	h := Hash([]byte("hola"), c)
@@ -29,7 +15,7 @@ func TestHash(t *testing.T) {
 }
 
 func TestSign(t *testing.T) {
-	ec := ecc.NewEC(0, 7, 11)
+	ec := ecc.NewEC(big.NewInt(int64(0)), big.NewInt(int64(7)), big.NewInt(int64(11)))
 	g := ecc.Point{big.NewInt(int64(7)), big.NewInt(int64(8))} // Generator
 	r := big.NewInt(int64(7))                                  // random r
 	schnorr, sk, err := Gen(ec, g, r)
@@ -47,7 +33,7 @@ func TestSign(t *testing.T) {
 }
 
 func TestSign2(t *testing.T) {
-	ec := ecc.NewEC(0, 7, 29)
+	ec := ecc.NewEC(big.NewInt(int64(0)), big.NewInt(int64(7)), big.NewInt(int64(29)))
 	g := ecc.Point{big.NewInt(int64(11)), big.NewInt(int64(27))} // Generator
 	r := big.NewInt(int64(23))                                   // random r
 	schnorr, sk, err := Gen(ec, g, r)
