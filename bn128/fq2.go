@@ -1,6 +1,7 @@
 package bn128
 
 import (
+	"bytes"
 	"math/big"
 )
 
@@ -73,6 +74,21 @@ func (fq2 Fq2) Mul(a, b [2]*big.Int) [2]*big.Int {
 			fq2.F.Add(v0, v1)),
 	}
 }
+func (fq2 Fq2) MulScalar(base [2]*big.Int, e *big.Int) [2]*big.Int {
+	res := fq2.Zero()
+	rem := e
+	exp := base
+
+	for !bytes.Equal(rem.Bytes(), big.NewInt(int64(0)).Bytes()) {
+		// if rem % 2 == 1
+		if bytes.Equal(new(big.Int).Rem(rem, big.NewInt(int64(2))).Bytes(), big.NewInt(int64(1)).Bytes()) {
+			res = fq2.Add(res, exp)
+		}
+		exp = fq2.Double(exp)
+		rem = rem.Rsh(rem, 1) // rem = rem >> 1
+	}
+	return res
+}
 
 // Inverse returns the inverse on the Fq2
 func (fq2 Fq2) Inverse(a [2]*big.Int) [2]*big.Int {
@@ -106,5 +122,16 @@ func (fq2 Fq2) Square(a [2]*big.Int) [2]*big.Int {
 				ab,
 				fq2.mulByNonResidue(ab))),
 		fq2.F.Add(ab, ab),
+	}
+}
+
+func (fq2 Fq2) IsZero(a [2]*big.Int) bool {
+	return fq2.F.IsZero(a[0]) && fq2.F.IsZero(a[1])
+}
+
+func (fq2 Fq2) Affine(a [2]*big.Int) [2]*big.Int {
+	return [2]*big.Int{
+		fq2.F.Affine(a[0]),
+		fq2.F.Affine(a[1]),
 	}
 }

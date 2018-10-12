@@ -1,6 +1,7 @@
 package bn128
 
 import (
+	"bytes"
 	"math/big"
 )
 
@@ -40,6 +41,10 @@ func (fq6 Fq6) Add(a, b [3][2]*big.Int) [3][2]*big.Int {
 		fq6.F.Add(a[1], b[1]),
 		fq6.F.Add(a[2], b[2]),
 	}
+}
+
+func (fq6 Fq6) Double(a [3][2]*big.Int) [3][2]*big.Int {
+	return fq6.Add(a, a)
 }
 
 // Sub performs a substraction on the Fq6
@@ -87,6 +92,22 @@ func (fq6 Fq6) Mul(a, b [3][2]*big.Int) [3][2]*big.Int {
 				fq6.F.Add(v0, v2)),
 			v1),
 	}
+}
+
+func (fq6 Fq6) MulScalar(base [3][2]*big.Int, e *big.Int) [3][2]*big.Int {
+	res := fq6.Zero()
+	rem := e
+	exp := base
+
+	for !bytes.Equal(rem.Bytes(), big.NewInt(int64(0)).Bytes()) {
+		// if rem % 2 == 1
+		if bytes.Equal(new(big.Int).Rem(rem, big.NewInt(int64(2))).Bytes(), big.NewInt(int64(1)).Bytes()) {
+			res = fq6.Add(res, exp)
+		}
+		exp = fq6.Double(exp)
+		rem = rem.Rsh(rem, 1) // rem = rem >> 1
+	}
+	return res
 }
 
 // Inverse returns the inverse on the Fq6

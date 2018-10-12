@@ -1,6 +1,7 @@
 package bn128
 
 import (
+	"bytes"
 	"math/big"
 )
 
@@ -56,6 +57,10 @@ func (fq Fq) Mul(a, b *big.Int) *big.Int {
 	return new(big.Int).Mod(m, fq.Q)
 }
 
+func (fq Fq) MulScalar(base, e *big.Int) *big.Int {
+	return fq.Mul(base, e)
+}
+
 // Inverse returns the inverse on the Fq
 func (fq Fq) Inverse(a *big.Int) *big.Int {
 	return new(big.Int).ModInverse(a, fq.Q)
@@ -71,4 +76,16 @@ func (fq Fq) Div(a, b *big.Int) *big.Int {
 func (fq Fq) Square(a *big.Int) *big.Int {
 	m := new(big.Int).Mul(a, a)
 	return new(big.Int).Mod(m, fq.Q)
+}
+
+func (fq Fq) IsZero(a *big.Int) bool {
+	return bytes.Equal(a.Bytes(), fq.Zero().Bytes())
+}
+
+func (fq Fq) Copy(a *big.Int) *big.Int {
+	return new(big.Int).SetBytes(a.Bytes())
+}
+
+func (fq Fq) Affine(a *big.Int) *big.Int {
+	return a
 }
