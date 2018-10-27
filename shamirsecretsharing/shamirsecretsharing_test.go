@@ -1,7 +1,9 @@
 package shamirsecretsharing
 
 import (
+	"bytes"
 	"crypto/rand"
+	"fmt"
 	"math/big"
 	"testing"
 
@@ -9,7 +11,7 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	k := 123456789
+	k := big.NewInt(int64(123456789))
 	p, err := rand.Prime(rand.Reader, bits/2)
 	assert.Nil(t, err)
 
@@ -19,7 +21,7 @@ func TestCreate(t *testing.T) {
 		nNeededSecrets,
 		nShares,
 		p,
-		big.NewInt(int64(k)))
+		k)
 	assert.Nil(t, err)
 
 	//generate sharesToUse
@@ -29,15 +31,15 @@ func TestCreate(t *testing.T) {
 	sharesToUse = append(sharesToUse, shares[0])
 	secr := LagrangeInterpolation(sharesToUse, p)
 
-	// fmt.Print("original secret: ")
-	// fmt.Println(k)
-	// fmt.Print("p: ")
-	// fmt.Println(p)
-	// fmt.Print("shares: ")
-	// fmt.Println(shares)
-	// fmt.Print("secret result: ")
-	// fmt.Println(secr)
-	if int64(k) != secr.Int64() {
+	fmt.Print("original secret: ")
+	fmt.Println(k)
+	fmt.Print("p: ")
+	fmt.Println(p)
+	fmt.Print("shares: ")
+	fmt.Println(shares)
+	fmt.Print("secret result: ")
+	fmt.Println(secr)
+	if !bytes.Equal(k.Bytes(), secr.Bytes()) {
 		t.Errorf("reconstructed secret not correspond to original secret")
 	}
 }

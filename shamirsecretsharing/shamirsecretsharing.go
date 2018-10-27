@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	bits = 1024
+	// bits = 1024
+	bits = 2048
 )
 
 // Create calculates the secrets to share from given parameters
