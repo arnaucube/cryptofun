@@ -130,6 +130,9 @@ func Verify(ec ecc.EC, pk PubK, m []byte, s *big.Int, rPoint ecc.Point) (bool, e
 
 	// s x P
 	sp, err := ec.Mul(pk.P, s)
+	if err != nil {
+		return false, err
+	}
 
 	// return reQ.Equal(sp), nil
 	return eQ.Equal(sp), nil

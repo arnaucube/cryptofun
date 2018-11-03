@@ -89,3 +89,6 @@ func (fq Fq) Copy(a *big.Int) *big.Int {
 func (fq Fq) Affine(a *big.Int) *big.Int {
 	return a
 }
+func (fq Fq) Equal(a, b *big.Int) bool {
+	return bytes.Equal(a.Bytes(), b.Bytes())
+}

@@ -21,8 +21,8 @@ func NewG2(f Fq2, g [2][2]*big.Int) G2 {
 	return g2
 }
 
-func (g2 G2) Zero() [2][2]*big.Int {
-	return [2][2]*big.Int{g2.F.Zero(), g2.F.Zero()}
+func (g2 G2) Zero() [3][2]*big.Int {
+	return [3][2]*big.Int{g2.F.Zero(), g2.F.One(), g2.F.Zero()}
 }
 func (g2 G2) IsZero(p [3][2]*big.Int) bool {
 	return g2.F.IsZero(p[2])
@@ -155,7 +155,7 @@ func (g2 G2) MulScalar(base [3][2]*big.Int, e *big.Int) [3][2]*big.Int {
 	return res
 }
 
-func (g2 G2) Affine(p [3][2]*big.Int) [2][2]*big.Int {
+func (g2 G2) Affine(p [3][2]*big.Int) [3][2]*big.Int {
 	if g2.IsZero(p) {
 		return g2.Zero()
 	}
@@ -167,8 +167,12 @@ func (g2 G2) Affine(p [3][2]*big.Int) [2][2]*big.Int {
 	zinv3 := g2.F.Mul(zinv2, zinv)
 	y := g2.F.Mul(p[1], zinv3)
 
-	return [2][2]*big.Int{
+	return [3][2]*big.Int{
 		x,
 		y,
+		[2]*big.Int{
+			big.NewInt(int64(0)),
+			big.NewInt(int64(0)),
+		},
 	}
 }

@@ -186,15 +186,15 @@ if err!=nil {
 	fmt.Println(err)
 }
 
-// define how many secrets are needed to recover the secret
-nNeededSecrets := big.NewInt(int64(3))
-
 // define how many shares want to generate
 nShares := big.NewInt(int64(6))
 
+// define how many shares are needed to recover the secret
+nNeededShares := big.NewInt(int64(3))
+
 // create the shares
 shares, err := Create(
-	nNeededSecrets,
+	nNeededShares,
 	nShares,
 	p,
 	big.NewInt(int64(k)))

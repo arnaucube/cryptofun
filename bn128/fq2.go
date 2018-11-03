@@ -135,3 +135,6 @@ func (fq2 Fq2) Affine(a [2]*big.Int) [2]*big.Int {
 		fq2.F.Affine(a[1]),
 	}
 }
+func (fq2 Fq2) Equal(a, b [2]*big.Int) bool {
+	return fq2.F.Equal(a[0], b[0]) && fq2.F.Equal(a[1], b[1])
+}

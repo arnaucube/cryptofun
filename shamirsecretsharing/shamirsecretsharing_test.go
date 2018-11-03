@@ -15,10 +15,10 @@ func TestCreate(t *testing.T) {
 	p, err := rand.Prime(rand.Reader, bits/2)
 	assert.Nil(t, err)
 
-	nNeededSecrets := big.NewInt(int64(3))
 	nShares := big.NewInt(int64(6))
+	nNeededShares := big.NewInt(int64(3))
 	shares, err := Create(
-		nNeededSecrets,
+		nNeededShares,
 		nShares,
 		p,
 		k)
