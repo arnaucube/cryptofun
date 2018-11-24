@@ -419,26 +419,32 @@ if verified {
 
 
 ## Bn128
-**[not finished]**
 
-This is implemented followng the implementations and info from:
-- https://github.com/iden3/zksnark
-- https://github.com/zcash/zcash/tree/master/src/snark
-- https://github.com/ethereum/py_ecc/tree/master/py_ecc/bn128
+This is implemented followng the info and the implementations from:
 - `Multiplication and Squaring on Pairing-Friendly
 Fields`, Augusto Jun Devegili, Colm Ó hÉigeartaigh, Michael Scott, and Ricardo Dahab https://pdfs.semanticscholar.org/3e01/de88d7428076b2547b60072088507d881bf1.pdf
-- `Optimal Pairings`, Frederik Vercauteren https://www.cosic.esat.kuleuven.be/bcrypt/optimal.pdf
+- `Optimal Pairings`, Frederik Vercauteren https://www.cosic.esat.kuleuven.be/bcrypt/optimal.pdf , https://eprint.iacr.org/2008/096.pdf
 - `Double-and-Add with Relative Jacobian
 Coordinates`, Björn Fay https://eprint.iacr.org/2014/1014.pdf
 - `Fast and Regular Algorithms for Scalar Multiplication
 over Elliptic Curves`, Matthieu Rivain https://eprint.iacr.org/2011/338.pdf
+- `High-Speed Software Implementation of the Optimal Ate Pairing over Barreto–Naehrig Curves`,  Jean-Luc Beuchat, Jorge E. González-Díaz, Shigeo Mitsunari, Eiji Okamoto, Francisco Rodríguez-Henríquez, and Tadanori Teruya https://eprint.iacr.org/2010/354.pdf
+- `New software speed records for cryptographic pairings`, Michael Naehrig, Ruben Niederhagen, Peter Schwabe https://cryptojedi.org/papers/dclxvi-20100714.pdf
+- https://github.com/zcash/zcash/tree/master/src/snark
+- https://github.com/iden3/snarkjs
+- https://github.com/ethereum/py_ecc/tree/master/py_ecc/bn128
 
 - [x] Fq, Fq2, Fq6, Fq12 operations
 - [x] G1, G2 operations
+- [x] preparePairing
+- [x] PreComupteG1, PreComupteG2
+- [x] DoubleStep, AddStep
+- [x] MillerLoop
+- [x] Pairing
 
 
 #### Usage
-First let's define three basic functions to convert integer compositions to big integer compositions:
+First let's assume that we have these three basic functions to convert integer compositions to big integer compositions:
 ```go
 func iToBig(a int) *big.Int {
 	return big.NewInt(int64(a))
@@ -451,6 +457,28 @@ func iiToBig(a, b int) [2]*big.Int {
 func iiiToBig(a, b int) [2]*big.Int {
 	return [2]*big.Int{iToBig(a), iToBig(b)}
 }
+```
+
+
+- Pairing
+```go
+bn128, err := NewBn128()
+assert.Nil(t, err)
+
+big25 := big.NewInt(int64(25))
+big30 := big.NewInt(int64(30))
+
+g1a := bn128.G1.MulScalar(bn128.G1.G, big25)
+g2a := bn128.G2.MulScalar(bn128.G2.G, big30)
+
+g1b := bn128.G1.MulScalar(bn128.G1.G, big30)
+g2b := bn128.G2.MulScalar(bn128.G2.G, big25)
+
+pA, err := bn128.Pairing(g1a, g2a)
+assert.Nil(t, err)
+pB, err := bn128.Pairing(g1b, g2b)
+assert.Nil(t, err)
+assert.True(t, bn128.Fq12.Equal(pA, pB))
 ```
 
 - Finite Fields (1, 2, 6, 12) operations
@@ -468,7 +496,7 @@ res = fq1.Inverse(iToBig(4))
 res = fq1.Square(iToBig(5))
 
 // new finite field of order 2
-nonResidueFq2str := "-1" // i / Beta
+nonResidueFq2str := "-1" // i/j
 nonResidueFq2, ok := new(big.Int).SetString(nonResidueFq2str, 10)
 fq2 := Fq2{fq1, nonResidueFq2}
 nonResidueFq6 := iiToBig(9, 1)
@@ -563,6 +591,7 @@ a := bn128.G2.Affine(grsum1)
 b := bn128.G2.Affine(grsum2)
 assert.Equal(t, a, b)
 ```
+
 
 ---
 

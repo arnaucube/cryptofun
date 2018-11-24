@@ -3,7 +3,6 @@ package shamirsecretsharing
 import (
 	"bytes"
 	"crypto/rand"
-	"fmt"
 	"math/big"
 	"testing"
 
@@ -31,14 +30,14 @@ func TestCreate(t *testing.T) {
 	sharesToUse = append(sharesToUse, shares[0])
 	secr := LagrangeInterpolation(sharesToUse, p)
 
-	fmt.Print("original secret: ")
-	fmt.Println(k)
-	fmt.Print("p: ")
-	fmt.Println(p)
-	fmt.Print("shares: ")
-	fmt.Println(shares)
-	fmt.Print("secret result: ")
-	fmt.Println(secr)
+	// fmt.Print("original secret: ")
+	// fmt.Println(k)
+	// fmt.Print("p: ")
+	// fmt.Println(p)
+	// fmt.Print("shares: ")
+	// fmt.Println(shares)
+	// fmt.Print("secret result: ")
+	// fmt.Println(secr)
 	if !bytes.Equal(k.Bytes(), secr.Bytes()) {
 		t.Errorf("reconstructed secret not correspond to original secret")
 	}

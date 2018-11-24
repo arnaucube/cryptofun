@@ -31,7 +31,7 @@ func (fq12 Fq12) Zero() [2][3][2]*big.Int {
 
 // One returns a One value on the Fq12
 func (fq12 Fq12) One() [2][3][2]*big.Int {
-	return [2][3][2]*big.Int{fq12.F.One(), fq12.F.One()}
+	return [2][3][2]*big.Int{fq12.F.One(), fq12.F.Zero()}
 }
 
 func (fq12 Fq12) mulByNonResidue(a [3][2]*big.Int) [3][2]*big.Int {
@@ -70,7 +70,7 @@ func (fq12 Fq12) Neg(a [2][3][2]*big.Int) [2][3][2]*big.Int {
 
 // Mul performs a multiplication on the Fq12
 func (fq12 Fq12) Mul(a, b [2][3][2]*big.Int) [2][3][2]*big.Int {
-	// Multiplication and Squaring on Pairing-Friendly [2]*big.Ints.pdf; Section 3 (Karatsuba)
+	// Multiplication and Squaring on Pairing-Friendly .pdf; Section 3 (Karatsuba)
 	v0 := fq12.F.Mul(a[0], b[0])
 	v1 := fq12.F.Mul(a[1], b[1])
 	return [2][3][2]*big.Int{
@@ -84,6 +84,8 @@ func (fq12 Fq12) Mul(a, b [2][3][2]*big.Int) [2][3][2]*big.Int {
 }
 
 func (fq12 Fq12) MulScalar(base [2][3][2]*big.Int, e *big.Int) [2][3][2]*big.Int {
+	// for more possible implementations see g2.go file, at the function g2.MulScalar()
+
 	res := fq12.Zero()
 	rem := e
 	exp := base
@@ -132,4 +134,28 @@ func (fq12 Fq12) Square(a [2][3][2]*big.Int) [2][3][2]*big.Int {
 				fq12.mulByNonResidue(ab))),
 		fq12.F.Add(ab, ab),
 	}
+}
+
+func (fq12 Fq12) Exp(base [2][3][2]*big.Int, e *big.Int) [2][3][2]*big.Int {
+	res := fq12.One()
+	rem := fq12.Fq2.F.Copy(e)
+	exp := base
+
+	for !bytes.Equal(rem.Bytes(), big.NewInt(int64(0)).Bytes()) {
+		if BigIsOdd(rem) {
+			res = fq12.Mul(res, exp)
+		}
+		exp = fq12.Square(exp)
+		rem = new(big.Int).Rsh(rem, 1)
+	}
+	return res
+}
+func (fq12 Fq12) Affine(a [2][3][2]*big.Int) [2][3][2]*big.Int {
+	return [2][3][2]*big.Int{
+		fq12.F.Affine(a[0]),
+		fq12.F.Affine(a[1]),
+	}
+}
+func (fq12 Fq12) Equal(a, b [2][3][2]*big.Int) bool {
+	return fq12.F.Equal(a[0], b[0]) && fq12.F.Equal(a[1], b[1])
 }

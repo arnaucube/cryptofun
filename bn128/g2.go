@@ -1,7 +1,6 @@
 package bn128
 
 import (
-	"bytes"
 	"math/big"
 )
 
@@ -119,7 +118,7 @@ func (g2 G2) Double(p [3][2]*big.Int) [3][2]*big.Int {
 	t3 := g2.F.Sub(t2, c)
 
 	d := g2.F.Double(t3)
-	e := g2.F.Add(g2.F.Add(a, a), a) // e = 3*a
+	e := g2.F.Add(g2.F.Add(a, a), a)
 	f := g2.F.Square(e)
 
 	t4 := g2.F.Double(d)
@@ -138,21 +137,45 @@ func (g2 G2) Double(p [3][2]*big.Int) [3][2]*big.Int {
 	return [3][2]*big.Int{x3, y3, z3}
 }
 
-func (g2 G2) MulScalar(base [3][2]*big.Int, e *big.Int) [3][2]*big.Int {
-	// res := g2.Zero()
-	res := [3][2]*big.Int{g2.F.Zero(), g2.F.Zero(), g2.F.Zero()}
-	rem := e
-	exp := base
+func (g2 G2) MulScalar(p [3][2]*big.Int, e *big.Int) [3][2]*big.Int {
+	// https://en.wikipedia.org/wiki/Elliptic_curve_point_multiplication#Double-and-add
 
-	for !bytes.Equal(rem.Bytes(), big.NewInt(int64(0)).Bytes()) {
-		// if rem % 2 == 1
-		if bytes.Equal(new(big.Int).Rem(rem, big.NewInt(int64(2))).Bytes(), big.NewInt(int64(1)).Bytes()) {
-			res = g2.Add(res, exp)
+	q := [3][2]*big.Int{g2.F.Zero(), g2.F.Zero(), g2.F.Zero()}
+	d := g2.F.F.Copy(e) // d := e
+	r := p
+
+	/*
+		here are three possible implementations:
+	*/
+
+	/* index decreasing: */
+	for i := d.BitLen() - 1; i >= 0; i-- {
+		q = g2.Double(q)
+		if d.Bit(i) == 1 {
+			q = g2.Add(q, r)
 		}
-		exp = g2.Double(exp)
-		rem = rem.Rsh(rem, 1) // rem = rem >> 1
 	}
-	return res
+
+	/* index increasing: */
+	// for i := 0; i <= d.BitLen(); i++ {
+	// 	if d.Bit(i) == 1 {
+	// 		q = g2.Add(q, r)
+	// 	}
+	// 	r = g2.Double(r)
+	// }
+
+	// foundone := false
+	// for i := d.BitLen(); i >= 0; i-- {
+	// 	if foundone {
+	// 		q = g2.Double(q)
+	// 	}
+	// 	if d.Bit(i) == 1 {
+	// 		foundone = true
+	// 		q = g2.Add(q, r)
+	// 	}
+	// }
+
+	return q
 }
 
 func (g2 G2) Affine(p [3][2]*big.Int) [3][2]*big.Int {
@@ -168,11 +191,31 @@ func (g2 G2) Affine(p [3][2]*big.Int) [3][2]*big.Int {
 	y := g2.F.Mul(p[1], zinv3)
 
 	return [3][2]*big.Int{
-		x,
-		y,
-		[2]*big.Int{
-			big.NewInt(int64(0)),
-			big.NewInt(int64(0)),
-		},
+		g2.F.Affine(x),
+		g2.F.Affine(y),
+		g2.F.One(),
 	}
+}
+
+func (g2 G2) Equal(p1, p2 [3][2]*big.Int) bool {
+	if g2.IsZero(p1) {
+		return g2.IsZero(p2)
+	}
+	if g2.IsZero(p2) {
+		return g2.IsZero(p1)
+	}
+
+	z1z1 := g2.F.Square(p1[2])
+	z2z2 := g2.F.Square(p2[2])
+
+	u1 := g2.F.Mul(p1[0], z2z2)
+	u2 := g2.F.Mul(p2[0], z1z1)
+
+	z1cub := g2.F.Mul(p1[2], z1z1)
+	z2cub := g2.F.Mul(p2[2], z2z2)
+
+	s1 := g2.F.Mul(p1[1], z2cub)
+	s2 := g2.F.Mul(p2[1], z1cub)
+
+	return g2.F.Equal(u1, u2) && g2.F.Equal(s1, s2)
 }

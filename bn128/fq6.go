@@ -27,7 +27,7 @@ func (fq6 Fq6) Zero() [3][2]*big.Int {
 
 // One returns a One value on the Fq6
 func (fq6 Fq6) One() [3][2]*big.Int {
-	return [3][2]*big.Int{fq6.F.One(), fq6.F.One(), fq6.F.One()}
+	return [3][2]*big.Int{fq6.F.One(), fq6.F.Zero(), fq6.F.Zero()}
 }
 
 func (fq6 Fq6) mulByNonResidue(a [2]*big.Int) [2]*big.Int {
@@ -95,6 +95,8 @@ func (fq6 Fq6) Mul(a, b [3][2]*big.Int) [3][2]*big.Int {
 }
 
 func (fq6 Fq6) MulScalar(base [3][2]*big.Int, e *big.Int) [3][2]*big.Int {
+	// for more possible implementations see g2.go file, at the function g2.MulScalar()
+
 	res := fq6.Zero()
 	rem := e
 	exp := base
@@ -167,5 +169,24 @@ func (fq6 Fq6) Square(a [3][2]*big.Int) [3][2]*big.Int {
 				fq6.F.Add(s1, s2),
 				s3),
 			fq6.F.Add(s0, s4)),
+	}
+}
+
+func (fq6 Fq6) Affine(a [3][2]*big.Int) [3][2]*big.Int {
+	return [3][2]*big.Int{
+		fq6.F.Affine(a[0]),
+		fq6.F.Affine(a[1]),
+		fq6.F.Affine(a[2]),
+	}
+}
+func (fq6 Fq6) Equal(a, b [3][2]*big.Int) bool {
+	return fq6.F.Equal(a[0], b[0]) && fq6.F.Equal(a[1], b[1]) && fq6.F.Equal(a[2], b[2])
+}
+
+func (fq6 Fq6) Copy(a [3][2]*big.Int) [3][2]*big.Int {
+	return [3][2]*big.Int{
+		fq6.F.Copy(a[0]),
+		fq6.F.Copy(a[1]),
+		fq6.F.Copy(a[2]),
 	}
 }

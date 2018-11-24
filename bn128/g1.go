@@ -1,7 +1,6 @@
 package bn128
 
 import (
-	"bytes"
 	"math/big"
 )
 
@@ -117,7 +116,7 @@ func (g1 G1) Double(p [3]*big.Int) [3]*big.Int {
 	t3 := g1.F.Sub(t2, c)
 
 	d := g1.F.Double(t3)
-	e := g1.F.Add(g1.F.Add(a, a), a) // e = 3*a
+	e := g1.F.Add(g1.F.Add(a, a), a)
 	f := g1.F.Square(e)
 
 	t4 := g1.F.Double(d)
@@ -136,21 +135,21 @@ func (g1 G1) Double(p [3]*big.Int) [3]*big.Int {
 	return [3]*big.Int{x3, y3, z3}
 }
 
-func (g1 G1) MulScalar(base [3]*big.Int, e *big.Int) [3]*big.Int {
-	// res := g1.Zero()
-	res := [3]*big.Int{g1.F.Zero(), g1.F.Zero(), g1.F.Zero()}
-	rem := e
-	exp := base
+func (g1 G1) MulScalar(p [3]*big.Int, e *big.Int) [3]*big.Int {
+	// https://en.wikipedia.org/wiki/Elliptic_curve_point_multiplication#Double-and-add
+	// for more possible implementations see g2.go file, at the function g2.MulScalar()
 
-	for !bytes.Equal(rem.Bytes(), big.NewInt(int64(0)).Bytes()) {
-		// if rem % 2 == 1
-		if bytes.Equal(new(big.Int).Rem(rem, big.NewInt(int64(2))).Bytes(), big.NewInt(int64(1)).Bytes()) {
-			res = g1.Add(res, exp)
+	q := [3]*big.Int{g1.F.Zero(), g1.F.Zero(), g1.F.Zero()}
+	d := g1.F.Copy(e)
+	r := p
+	for i := d.BitLen() - 1; i >= 0; i-- {
+		q = g1.Double(q)
+		if d.Bit(i) == 1 {
+			q = g1.Add(q, r)
 		}
-		exp = g1.Double(exp)
-		rem = rem.Rsh(rem, 1) // rem = rem >> 1
 	}
-	return res
+
+	return q
 }
 
 func (g1 G1) Affine(p [3]*big.Int) [2]*big.Int {
@@ -166,4 +165,27 @@ func (g1 G1) Affine(p [3]*big.Int) [2]*big.Int {
 	y := g1.F.Mul(p[1], zinv3)
 
 	return [2]*big.Int{x, y}
+}
+
+func (g1 G1) Equal(p1, p2 [3]*big.Int) bool {
+	if g1.IsZero(p1) {
+		return g1.IsZero(p2)
+	}
+	if g1.IsZero(p2) {
+		return g1.IsZero(p1)
+	}
+
+	z1z1 := g1.F.Square(p1[2])
+	z2z2 := g1.F.Square(p2[2])
+
+	u1 := g1.F.Mul(p1[0], z2z2)
+	u2 := g1.F.Mul(p2[0], z1z1)
+
+	z1cub := g1.F.Mul(p1[2], z1z1)
+	z2cub := g1.F.Mul(p2[2], z2z2)
+
+	s1 := g1.F.Mul(p1[1], z2cub)
+	s2 := g1.F.Mul(p2[1], z1cub)
+
+	return g1.F.Equal(u1, u2) && g1.F.Equal(s1, s2)
 }

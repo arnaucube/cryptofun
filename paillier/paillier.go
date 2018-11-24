@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	bits = 16
+	bits = 18
 )
 
 // PublicKey stores the public key data

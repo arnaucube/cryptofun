@@ -1,7 +1,6 @@
 package bn128
 
 import (
-	"bytes"
 	"math/big"
 )
 
@@ -27,7 +26,7 @@ func (fq2 Fq2) Zero() [2]*big.Int {
 
 // One returns a One value on the Fq2
 func (fq2 Fq2) One() [2]*big.Int {
-	return [2]*big.Int{fq2.F.One(), fq2.F.One()}
+	return [2]*big.Int{fq2.F.One(), fq2.F.Zero()}
 }
 
 func (fq2 Fq2) mulByNonResidue(a *big.Int) *big.Int {
@@ -63,6 +62,7 @@ func (fq2 Fq2) Neg(a [2]*big.Int) [2]*big.Int {
 // Mul performs a multiplication on the Fq2
 func (fq2 Fq2) Mul(a, b [2]*big.Int) [2]*big.Int {
 	// Multiplication and Squaring on Pairing-Friendly.pdf; Section 3 (Karatsuba)
+	// https://pdfs.semanticscholar.org/3e01/de88d7428076b2547b60072088507d881bf1.pdf
 	v0 := fq2.F.Mul(a[0], b[0])
 	v1 := fq2.F.Mul(a[1], b[1])
 	return [2]*big.Int{
@@ -74,24 +74,31 @@ func (fq2 Fq2) Mul(a, b [2]*big.Int) [2]*big.Int {
 			fq2.F.Add(v0, v1)),
 	}
 }
-func (fq2 Fq2) MulScalar(base [2]*big.Int, e *big.Int) [2]*big.Int {
-	res := fq2.Zero()
-	rem := e
-	exp := base
 
-	for !bytes.Equal(rem.Bytes(), big.NewInt(int64(0)).Bytes()) {
-		// if rem % 2 == 1
-		if bytes.Equal(new(big.Int).Rem(rem, big.NewInt(int64(2))).Bytes(), big.NewInt(int64(1)).Bytes()) {
-			res = fq2.Add(res, exp)
+func (fq2 Fq2) MulScalar(p [2]*big.Int, e *big.Int) [2]*big.Int {
+	// for more possible implementations see g2.go file, at the function g2.MulScalar()
+
+	q := fq2.Zero()
+	d := fq2.F.Copy(e)
+	r := p
+
+	foundone := false
+	for i := d.BitLen(); i >= 0; i-- {
+		if foundone {
+			q = fq2.Double(q)
 		}
-		exp = fq2.Double(exp)
-		rem = rem.Rsh(rem, 1) // rem = rem >> 1
+		if d.Bit(i) == 1 {
+			foundone = true
+			q = fq2.Add(q, r)
+		}
 	}
-	return res
+	return q
 }
 
 // Inverse returns the inverse on the Fq2
 func (fq2 Fq2) Inverse(a [2]*big.Int) [2]*big.Int {
+	// High-Speed Software Implementation of the Optimal Ate Pairing over Barreto–Naehrig Curves .pdf
+	// https://eprint.iacr.org/2010/354.pdf , algorithm 8
 	t0 := fq2.F.Square(a[0])
 	t1 := fq2.F.Square(a[1])
 	t2 := fq2.F.Sub(t0, fq2.mulByNonResidue(t1))
@@ -109,8 +116,8 @@ func (fq2 Fq2) Div(a, b [2]*big.Int) [2]*big.Int {
 
 // Square performs a square operation on the Fq2
 func (fq2 Fq2) Square(a [2]*big.Int) [2]*big.Int {
+	// https://pdfs.semanticscholar.org/3e01/de88d7428076b2547b60072088507d881bf1.pdf , complex squaring
 	ab := fq2.F.Mul(a[0], a[1])
-
 	return [2]*big.Int{
 		fq2.F.Sub(
 			fq2.F.Mul(
@@ -137,4 +144,11 @@ func (fq2 Fq2) Affine(a [2]*big.Int) [2]*big.Int {
 }
 func (fq2 Fq2) Equal(a, b [2]*big.Int) bool {
 	return fq2.F.Equal(a[0], b[0]) && fq2.F.Equal(a[1], b[1])
+}
+
+func (fq2 Fq2) Copy(a [2]*big.Int) [2]*big.Int {
+	return [2]*big.Int{
+		fq2.F.Copy(a[0]),
+		fq2.F.Copy(a[1]),
+	}
 }

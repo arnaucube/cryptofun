@@ -18,10 +18,11 @@ func TestG1(t *testing.T) {
 	gr1 := bn128.G1.MulScalar(bn128.G1.G, bn128.Fq1.Copy(r1))
 	gr2 := bn128.G1.MulScalar(bn128.G1.G, bn128.Fq1.Copy(r2))
 
-	grsum1 := bn128.G1.Add(gr1, gr2)
-	r1r2 := bn128.Fq1.Add(r1, r2)
-	grsum2 := bn128.G1.MulScalar(bn128.G1.G, r1r2)
+	grsum1 := bn128.G1.Add(gr1, gr2)               // g*33 + g*44
+	r1r2 := bn128.Fq1.Add(r1, r2)                  // 33 + 44
+	grsum2 := bn128.G1.MulScalar(bn128.G1.G, r1r2) // g * (33+44)
 
+	assert.True(t, bn128.G1.Equal(grsum1, grsum2))
 	a := bn128.G1.Affine(grsum1)
 	b := bn128.G1.Affine(grsum2)
 	assert.Equal(t, a, b)
