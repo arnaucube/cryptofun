@@ -2,7 +2,7 @@
 Boneh–Lynn–Shacham (BLS) signature scheme implemented in Go.
 https://en.wikipedia.org/wiki/Boneh%E2%80%93Lynn%E2%80%93Shacham
 
-This package uses the BN128 Go implementation from https://github.com/arnaucube/go-snark/tree/master/bn128
+This package uses the BN128 Pairing Go implementation from https://github.com/arnaucube/go-snark/tree/master/bn128
 
 ### Usage
 ```go
