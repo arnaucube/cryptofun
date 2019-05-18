@@ -3,7 +3,6 @@ package bls
 import (
 	"crypto/rand"
 	"crypto/sha256"
-	"fmt"
 	"math/big"
 
 	"github.com/arnaucube/go-snark/bn128"
@@ -81,34 +80,37 @@ func (bls BLS) Verify(m []byte, sig [3][2]*big.Int, pubK [3]*big.Int) bool {
 	return bls.Bn.Fq12.Equal(p1, p2)
 }
 
+// AggregateSignatures
+// s = s0 + s1 + s2 ...
 func (bls BLS) AggregateSignatures(signatures ...[3][2]*big.Int) [3][2]*big.Int {
 	aggr := signatures[0]
-	for _, sig := range signatures {
-		aggr = bls.Bn.G2.Add(aggr, sig)
+	for i := 1; i < len(signatures); i++ {
+		aggr = bls.Bn.G2.Add(aggr, signatures[i])
 	}
 	return aggr
 }
-func (bls BLS) VerifyAggregatedSignatures(aggrsig [3][2]*big.Int, pubKArray [][3]*big.Int, mArray [][]byte) bool {
-	if len(pubKArray) != len(mArray) {
-		fmt.Println("pubK array and msg array not with the same number of elements")
-		return false
-	}
+
+// VerifyAggregatedSignatures
+// ê(G,S) == ê(P, H(m))
+// ê(G, s0+s1+s2...) == ê(p0, H(m)) x ê(p1, H(m)) x ê(p2, H(m)) ...
+func (bls BLS) VerifyAggregatedSignatures(aggrsig [3][2]*big.Int, pubKArray [][3]*big.Int, m []byte) bool {
 	pairingGS, err := bls.Bn.Pairing(bls.Bn.G1.G, aggrsig)
 	if err != nil {
 		return false
 	}
-	pairingsMul, err := bls.Bn.Pairing(pubKArray[0], bls.Hash(mArray[0]))
+
+	pairingsMul, err := bls.Bn.Pairing(pubKArray[0], bls.Hash(m))
 	if err != nil {
 		return false
 	}
-
 	for i := 1; i < len(pubKArray); i++ {
-		e, err := bls.Bn.Pairing(pubKArray[i], bls.Hash(mArray[i]))
+		e, err := bls.Bn.Pairing(pubKArray[i], bls.Hash(m))
 		if err != nil {
 			return false
 		}
 		pairingsMul = bls.Bn.Fq12.Mul(pairingsMul, e)
 	}
+
 	if !bls.Bn.Fq12.Equal(pairingGS, pairingsMul) {
 		return false
 	}
