@@ -92,26 +92,24 @@ func (bls BLS) AggregateSignatures(signatures ...[3][2]*big.Int) [3][2]*big.Int 
 
 // VerifyAggregatedSignatures
 // ê(G,S) == ê(P, H(m))
-// ê(G, s0+s1+s2...) == ê(p0, H(m)) x ê(p1, H(m)) x ê(p2, H(m)) ...
+// ê(G, s0+s1+s2...) == ê(p0+p1+p2..., H(m))
 func (bls BLS) VerifyAggregatedSignatures(aggrsig [3][2]*big.Int, pubKArray [][3]*big.Int, m []byte) bool {
-	pairingGS, err := bls.Bn.Pairing(bls.Bn.G1.G, aggrsig)
-	if err != nil {
-		return false
-	}
-
-	pairingsMul, err := bls.Bn.Pairing(pubKArray[0], bls.Hash(m))
-	if err != nil {
-		return false
-	}
+	aggrPubKs := pubKArray[0]
 	for i := 1; i < len(pubKArray); i++ {
-		e, err := bls.Bn.Pairing(pubKArray[i], bls.Hash(m))
-		if err != nil {
-			return false
-		}
-		pairingsMul = bls.Bn.Fq12.Mul(pairingsMul, e)
+		aggrPubKs = bls.Bn.G1.Add(aggrPubKs, pubKArray[i])
 	}
 
-	if !bls.Bn.Fq12.Equal(pairingGS, pairingsMul) {
+	left, err := bls.Bn.Pairing(bls.Bn.G1.G, aggrsig)
+	if err != nil {
+		return false
+	}
+
+	right, err := bls.Bn.Pairing(aggrPubKs, bls.Hash(m))
+	if err != nil {
+		return false
+	}
+
+	if !bls.Bn.Fq12.Equal(left, right) {
 		return false
 	}
 	return true

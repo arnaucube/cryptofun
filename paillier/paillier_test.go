@@ -24,8 +24,22 @@ func TestEncryptDecrypt(t *testing.T) {
 }
 
 func TestHomomorphicAddition(t *testing.T) {
-	key, err := GenerateKeyPair()
-	assert.Nil(t, err)
+	// key, err := GenerateKeyPair()
+	// assert.Nil(t, err)
+
+	// key harcoded for tests
+	pubK := PublicKey{
+		N: big.NewInt(204223),
+		G: big.NewInt(24929195694),
+	}
+	privK := PrivateKey{
+		Lambda: big.NewInt(101660),
+		Mu:     big.NewInt(117648),
+	}
+	key := Key{
+		PubK:  pubK,
+		PrivK: privK,
+	}
 
 	n1 := big.NewInt(int64(110))
 	n2 := big.NewInt(int64(150))

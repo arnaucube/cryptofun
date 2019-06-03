@@ -1,4 +1,5 @@
-# cryptofun [![Go Report Card](https://goreportcard.com/badge/github.com/arnaucube/cryptofun)](https://goreportcard.com/report/github.com/arnaucube/cryptofun)
+# cryptofun [![Go Report Card](https://goreportcard.com/badge/github.com/arnaucube/cryptofun)](https://goreportcard.com/report/github.com/arnaucube/cryptofun) [![Build Status](https://travis-ci.org/arnaucube/cryptofun.svg?branch=master)](https://travis-ci.org/arnaucube/cryptofun)
+
 
 Crypto algorithms from scratch. Academic purposes only.
 
